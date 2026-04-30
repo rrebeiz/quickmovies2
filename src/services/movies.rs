@@ -1,5 +1,5 @@
 use crate::errors::AppError;
-use crate::models::movies::{Movie, MovieCreateRequest};
+use crate::models::movies::{Movie, MovieCreateRequest, MovieUpdateRequest};
 use crate::repositories::movies::MovieRepository;
 
 pub struct MovieService {
@@ -51,6 +51,14 @@ impl MovieService {
         let result = self.repo.get_all_movies().await;
         match result {
             Ok(movies) => Ok(movies),
+            Err(e) => Err(AppError::Internal(e.to_string())),
+        }
+    }
+
+    pub async fn update_movie(&self, id: i64, movie: Movie) -> Result<Movie, AppError> {
+        let result = self.repo.update_movie(id, &movie).await;
+        match result {
+            Ok(r) => Ok(r),
             Err(e) => Err(AppError::Internal(e.to_string())),
         }
     }

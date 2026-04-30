@@ -1,5 +1,5 @@
 use crate::models::movies::{Movie, MovieCreateRequest};
-use sqlx::{PgPool, query};
+use sqlx::PgPool;
 
 pub struct MovieRepository {
     pub db: PgPool,
@@ -49,6 +49,21 @@ impl MovieRepository {
         let result = sqlx::query_as::<_, Movie>(query)
             .fetch_all(&self.db)
             .await?;
+        Ok(result)
+    }
+
+    pub async fn update_movie(&self, id: i64, movie: &Movie) -> Result<Movie, sqlx::Error> {
+        let query = r#"UPDATE movies SET title = $1, year = $2, runtime = $3, genres = $4, version = version + 1 WHERE id = $5 and version = $6 RETURNING *"#;
+        let result = sqlx::query_as::<_, Movie>(query)
+            .bind(&movie.title)
+            .bind(&movie.year)
+            .bind(&movie.runtime)
+            .bind(&movie.genres)
+            .bind(&id)
+            .bind(&movie.version)
+            .fetch_one(&self.db)
+            .await?;
+
         Ok(result)
     }
 }
