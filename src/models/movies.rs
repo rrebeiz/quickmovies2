@@ -28,3 +28,12 @@ pub struct MovieUpdateRequest {
     pub runtime: Option<i32>,
     pub genres: Option<Vec<String>>,
 }
+
+#[derive(Debug, Serialize)]
+pub struct MovieResponse {
+    pub id: i64,
+    pub title: String,
+    pub year: i32,
+    pub runtime: i32,
+    pub genres: Vec<String>,
+}

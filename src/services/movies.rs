@@ -46,4 +46,12 @@ impl MovieService {
             Err(e) => Err(AppError::Internal(e.to_string())),
         }
     }
+
+    pub async fn get_all_movies(&self) -> Result<Vec<Movie>, AppError> {
+        let result = self.repo.get_all_movies().await;
+        match result {
+            Ok(movies) => Ok(movies),
+            Err(e) => Err(AppError::Internal(e.to_string())),
+        }
+    }
 }

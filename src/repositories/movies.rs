@@ -1,5 +1,5 @@
 use crate::models::movies::{Movie, MovieCreateRequest};
-use sqlx::PgPool;
+use sqlx::{PgPool, query};
 
 pub struct MovieRepository {
     pub db: PgPool,
@@ -42,5 +42,13 @@ impl MovieRepository {
             .execute(&self.db)
             .await?;
         Ok(result.rows_affected() > 0)
+    }
+
+    pub async fn get_all_movies(&self) -> Result<Vec<Movie>, sqlx::Error> {
+        let query = r#"select * from movies"#;
+        let result = sqlx::query_as::<_, Movie>(query)
+            .fetch_all(&self.db)
+            .await?;
+        Ok(result)
     }
 }
