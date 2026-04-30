@@ -1,0 +1,15 @@
+services:
+  db:
+    container_name: 'quickmovies'
+    image: postgres:16-alpine
+    restart: 'unless-stopped'
+    environment:
+      POSTGRES_DB: quickmovies
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - quickmovies:/var/lib/postgresql/data
+volumes:
+  quickmovies:
