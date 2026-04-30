@@ -28,4 +28,22 @@ impl MovieService {
             Err(e) => Err(AppError::Internal(e.to_string())),
         }
     }
+
+    pub async fn delete_movie_by_id(&self, id: i64) -> Result<(), AppError> {
+        let result = self.repo.delete_movie_by_id(id).await;
+        match result {
+            Ok(r) => {
+                if r {
+                    Ok(())
+                } else {
+                    Err(AppError::NotFound(format!(
+                        "the movie with id {} not found",
+                        id
+                    )))
+                }
+            }
+
+            Err(e) => Err(AppError::Internal(e.to_string())),
+        }
+    }
 }
