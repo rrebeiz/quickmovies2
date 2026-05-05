@@ -8,6 +8,7 @@ mod models;
 mod repositories;
 mod routes;
 mod services;
+mod validator;
 
 use crate::services::movies::MovieService;
 use std::sync::Arc;

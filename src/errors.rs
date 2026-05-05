@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use axum::{
     Json,
     http::StatusCode,
@@ -9,20 +11,35 @@ use serde::Serialize;
 pub enum AppError {
     NotFound(String),
     Internal(String),
+    Validation(HashMap<String, String>),
 }
 
 #[derive(Serialize)]
-struct ErrorResponse {
-    error: String,
+enum ErrorResponse {
+    Error {
+        error: String,
+    },
+
+    ValidationErrors {
+        validation_errors: HashMap<String, String>,
+    },
 }
 
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let (status, message) = match self {
-            AppError::NotFound(msg) => (StatusCode::NOT_FOUND, msg),
-            AppError::Internal(msg) => (StatusCode::INTERNAL_SERVER_ERROR, msg),
+            AppError::NotFound(msg) => (StatusCode::NOT_FOUND, ErrorResponse::Error { error: msg }),
+            AppError::Internal(msg) => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                ErrorResponse::Error { error: msg },
+            ),
+            AppError::Validation(errors) => (
+                StatusCode::UNPROCESSABLE_ENTITY,
+                ErrorResponse::ValidationErrors {
+                    validation_errors: errors,
+                },
+            ),
         };
-        let body = Json(ErrorResponse { error: message });
-        (status, body).into_response()
+        (status, Json(message)).into_response()
     }
 }
